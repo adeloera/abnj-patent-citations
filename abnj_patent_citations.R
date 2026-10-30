@@ -193,9 +193,10 @@ theme_set(theme_minimal(base_size = 10, base_family = "Helvetica") +
         plot.title          = element_text(size = 9.5, face = "bold"),
         plot.title.position = "plot"))
 
-# Panel A counts species in bins of ten percentage points of ABNJ share and
-# labels each bin with its citations. Shares are rounded before binning so that
-# a share of exactly 0.3 falls in the 30 bin rather than on a floating-point edge.
+# Panel A sums patent citations over species in bins of ten percentage points
+# of ABNJ share and labels each bin with its number of species. Shares are
+# rounded before binning so that a share of exactly 0.3 falls in the 30 bin
+# rather than on a floating-point edge.
 bins <- species |>
   mutate(decile = pmin(floor(round(share_abnj, 9) * 10), 9)) |>
   group_by(decile) |>
@@ -205,15 +206,14 @@ bins <- species |>
          bin   = factor(decile, levels = 0:9, labels = c(seq(0, 80, 10), "90+")),
          group = if_else(decile >= threshold * 10, "abnj", "other"))
 
-panel_a <- ggplot(bins, aes(bin, species, fill = group)) +
+panel_a <- ggplot(bins, aes(bin, citations, fill = group)) +
   geom_col(width = 0.75) +
-  geom_text(aes(label = format(citations, big.mark = ",")),
-            vjust = -0.4, size = 2.5, colour = "grey20") +
+  geom_text(aes(label = species), vjust = -0.4, size = 2.5, colour = "grey20") +
   scale_fill_manual(values = colours, guide = "none") +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.18))) +
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.18))) +
   labs(x     = "Share of occurrence records in ABNJ (%)",
-       y     = "Patented species (labels: citations)",
-       title = "A. Patented species by where they occur") +
+       y     = "Patent citations (labels: species)",
+       title = "A. Patent citations by species location") +
   theme(axis.text.x = element_text(size = 8))
 
 # Panel B traces the cumulative share of citations by year for the species
@@ -242,7 +242,7 @@ panel_b <- ggplot(timing, aes(year, cumulative_share, colour = group)) +
   scale_y_continuous(labels = scales::percent) +
   scale_x_continuous(breaks = seq(2004, 2020, 4)) +
   labs(x = NULL, y = "Cumulative share of citations",
-       title = "B. When the patent citations occurred") +
+       title = "B. Patent citation timing") +
   theme(legend.position    = "bottom",
         legend.direction   = "vertical",
         legend.text        = element_text(size = 8),

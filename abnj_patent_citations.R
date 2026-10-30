@@ -196,24 +196,23 @@ theme_set(theme_minimal(base_size = 10, base_family = "Helvetica") +
         plot.title.position = "plot"))
 
 # Panel A sums patent citations over species in bins of ten percentage points
-# of ABNJ share and labels each bin with its number of species. Shares are
-# rounded before binning so that a share of exactly 0.3 falls in the 30-39 bin
-# rather than on a floating-point edge.
+# of ABNJ share, drawn between the bin edges, and labels each bin with its
+# number of species. Shares are rounded before binning so that a share of
+# exactly 0.3 falls in the 30-40 bin rather than on a floating-point edge.
 bins <- species |>
   mutate(decile = pmin(floor(round(share_abnj, 9) * 10), 9)) |>
   group_by(decile) |>
   summarise(species = n(), citations = sum(citations), .groups = "drop") |>
   right_join(tibble(decile = 0:9), by = "decile") |>
   mutate(across(c(species, citations), \(x) coalesce(x, 0L)),
-         bin   = factor(decile, levels = 0:9,
-                        labels = c(paste(seq(0, 80, 10), seq(9, 89, 10), sep = "\u2013"), "90\u2013100")),
-         group = if_else(decile >= threshold * 10, "abnj", "other"))
+         midpoint = decile * 10 + 5,
+         group    = if_else(decile >= threshold * 10, "abnj", "other"))
 
-panel_a <- ggplot(bins, aes(bin, citations, fill = group)) +
-  geom_col(width = 0.75) +
+panel_a <- ggplot(bins, aes(midpoint, citations, fill = group)) +
+  geom_col(width = 7.5) +
   geom_text(aes(label = species), vjust = -0.4, size = 2.5, colour = "grey20") +
   scale_fill_manual(values = colours, guide = "none") +
-  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_x_continuous(breaks = seq(0, 100, 10), expand = expansion(add = 1)) +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.18))) +
   labs(x     = "Share of occurrence records in ABNJ (%)",
        y     = "Patent citations (labels: species)",

@@ -10,12 +10,13 @@
 # "Don't tax discovery to fund the High Seas Treaty".
 #
 # Inputs
-#   data/obis_occurrences.csv   OBIS records as retrieved; shipped with the code,
-#                               because a later retrieval would differ
+#   data/obis_occurrences.csv   OBIS records as retrieved on October 30, 2026;
+#                               shipped with the code, because a later retrieval
+#                               would differ
 #   data/MABPAT_dataset.csv     MABPAT v3 flat table; fetched from figshare on
 #                               first run (file 46240417)
-#   data/high_seas.gpkg         Marine Regions High Seas polygon, version 1;
-#                               fetched through the mregions2 package on first run
+#   data/high_seas.gpkg         Marine Regions High Seas polygon, version 1, as
+#                               rebuilt in section 3; shipped with the code
 #
 # Outputs, in output/
 #   species_provenance.csv      one row per species: citations, records, ABNJ share
@@ -52,8 +53,8 @@ colours   <- c(abnj = "#2a6f97", other = "grey60")
 mabpat_file <- "data/MABPAT_dataset.csv"
 if (!file.exists(mabpat_file)) {
   download.file("https://ndownloader.figshare.com/files/46240417", mabpat_file, mode = "wb")
-  stopifnot(tools::md5sum(mabpat_file) == "d125b6fde64a39781c86e315b7f60267")
 }
+stopifnot(tools::md5sum(mabpat_file) == "d125b6fde64a39781c86e315b7f60267")
 mabpat <- read_csv(mabpat_file, col_types = cols_only(
   Patent_application_number = col_character(),
   Year_of_application       = col_integer(),
@@ -69,6 +70,7 @@ citations <- marine |>
   distinct(species = Species_name,
            patent  = Patent_application_number,
            year    = Year_of_application)
+stopifnot(!anyDuplicated(citations[c("species", "patent")]))
 
 
 # 2. Occurrence records ------------------------------------------------------------
@@ -111,11 +113,12 @@ records <- read_csv(obis_file, col_types = cols(species = col_character(),
 # a polygon that wraps the poles.
 
 # As distributed, the polygon has edges that cross on the sphere, which the
-# spherical test rejects, so it is rebuilt once when it is fetched and stored
-# rebuilt.
+# spherical test rejects, so it is rebuilt once with s2 and shipped rebuilt. The
+# fetch below is only a fallback if the shipped file is missing; it takes
+# whatever version Marine Regions currently serves.
 high_seas_file <- "data/high_seas.gpkg"
 if (!file.exists(high_seas_file)) {
-  if (!requireNamespace("mregions2", quietly = TRUE)) install.packages("mregions2", repos = "https://cloud.r-project.org")
+  if (!requireNamespace("mregions2", quietly = TRUE)) stop("install the mregions2 package to fetch the High Seas layer")
   high_seas <- mregions2::mrp_get("high_seas") |>
     st_geometry() |>
     st_as_binary() |>

@@ -1,4 +1,3 @@
-
 This document describes the data and method behind the statement in the text of "Don't tax discovery to fund the High Seas Treaty" that species recorded mostly in areas beyond national jurisdiction (ABNJ) account for 115 of 6,062 patent citations in 2003 to 2020, and behind Fig. 2. It also lists the sources for Fig. 1. The code and the data as used are deposited at [repository].
 
 # Patent citations
@@ -29,7 +28,7 @@ The table gives the result at five thresholds. The text uses the row for one hal
 | at least 40% | 43 | 270 (4.5%) | 2010 | 2011 | 12% | 23% |
 | at least 20% | 87 | 607 (10.0%) | 2010 | 2011 | 15% | 24% |
 
-At the threshold of one half there are 28 species with 115 citations; the other 748 species have 5,947. The median citation year is 2010 against 2011, and 9% of the ABNJ citations fall after 2015 against 23% for the other species. The 7 species with at least 90% of their records in ABNJ are hydrothermal-vent fauna, a pelagic copepod, and two microorganisms with one or two records each: *Moritella abyssi*, *Prosthecochloris vibrioformis*, *Alvinella pompejana*, *Alvinella caudata*, *Bythograea thermydron*, *Metridia asymmetrica*, *Ventiella sulfuris*. Antarctic krill, *Euphausia superba*, has 88% of its records in ABNJ.
+At the threshold of one half there are 28 species with 115 citations; the other 748 species have 5,947. The median citation year is 2010 against 2011, and 9% of the ABNJ citations fall after 2015 against 23% for the other species. The 7 species with at least 90% of their records in ABNJ are two microorganisms with one or two records each (*Moritella abyssi*, *Prosthecochloris vibrioformis*), hydrothermal-vent fauna (*Alvinella pompejana*, *Alvinella caudata*, *Bythograea thermydron*, *Ventiella sulfuris*), and a pelagic copepod (*Metridia asymmetrica*). Antarctic krill, *Euphausia superba*, has 88% of its records in ABNJ.
 
 # Limitations
 

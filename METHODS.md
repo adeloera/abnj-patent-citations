@@ -1,4 +1,4 @@
-This document describes the data and method behind the statement in the text of "Don't tax discovery to fund the High Seas Treaty" that species recorded mostly in areas beyond national jurisdiction (ABNJ) account for 115 of 6,062 patent citations in 2003 to 2020, and behind Fig. 2. It also lists the sources for Fig. 1. The code and the data as used are deposited at [repository].
+This document describes the data and method behind the statement in the text of "Don't tax discovery to fund the High Seas Treaty" that species recorded mostly in areas beyond national jurisdiction (ABNJ) account for 115 of 6,062 patent citations in 2003 to 2020, and behind Fig. 2. It also lists the sources for Fig. 1. The code and the data as used are deposited at https://github.com/adeloera/abnj-patent-citations.
 
 # Patent citations
 

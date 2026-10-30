@@ -106,11 +106,9 @@ records <- read_csv(obis_file, col_types = cols(species = col_character(),
 #
 # A record lies in ABNJ when it falls inside the Marine Regions High Seas
 # polygon: the ocean beyond every exclusive economic zone, territorial sea and
-# internal water, which is the area the Agreement covers. Testing against this
-# one layer avoids the gap between a coastline drawn for maritime zones and one
-# drawn for land, where points in narrow straits and estuaries fall in neither
-# and would pass as ABNJ. The test runs on the sphere; a planar test misplaces
-# points near the antimeridian and mishandles a polygon that wraps the poles.
+# internal water, which is the area the Agreement covers. The test runs on the
+# sphere; a planar test misplaces points near the antimeridian and mishandles
+# a polygon that wraps the poles.
 
 # As distributed, the polygon has edges that cross on the sphere, which the
 # spherical test rejects, so it is rebuilt once when it is fetched and stored

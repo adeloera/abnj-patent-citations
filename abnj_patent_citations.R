@@ -1,12 +1,12 @@
 # Patent citations of marine species, by where the species occur
 #
 # The MABPAT database (Zhivkoplias et al. 2024) lists the marine species whose
-# sequences appear in bioprospecting patents. This script asks where those
-# species live. For each one it retrieves occurrence records from OBIS,
+# sequences appear in bioprospecting patents. This script matches those to
+# their spatial occurrence. For each species, it retrieves occurrence records from OBIS,
 # classifies every record as inside or outside national jurisdiction, and
 # computes the share of the species' records that fall in areas beyond
 # national jurisdiction (ABNJ). Patent citations are then tabulated by that
-# share. The result is the statistics quoted in the text and Fig. 2 of
+# share. The outputs include the statistics quoted in the text and Fig. 2 of
 # "Don't tax discovery to fund the High Seas Treaty".
 #
 # Inputs
@@ -107,11 +107,8 @@ records <- read_csv(obis_file, col_types = cols(species = col_character(),
 #
 # A record lies in ABNJ when it falls inside no exclusive economic zone and not
 # on land. Both tests run on the sphere; planar tests misplace points near the
-# antimeridian. The land test is not a formality. OBIS holds records for
-# mangroves, estuarine fish and crustaceans, and some freshwater species, and
-# their coordinates often fall on land and outside every EEZ polygon, which an
-# EEZ test alone would read as the high seas. Marine Regions draws no EEZ
-# polygons south of 60 S, so Southern Ocean records count as ABNJ.
+# antimeridian. The land test eliminates records for
+# mangroves, estuarine fish and crustaceans, and some freshwater species.
 
 # As distributed, three EEZ polygons have edges that cross on the sphere, which
 # the spherical intersection test rejects, so the layer is repaired once when

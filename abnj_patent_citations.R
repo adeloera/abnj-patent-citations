@@ -197,7 +197,7 @@ theme_set(theme_minimal(base_size = 10, base_family = "Helvetica") +
 
 # Panel A sums patent citations over species in bins of ten percentage points
 # of ABNJ share and labels each bin with its number of species. Shares are
-# rounded before binning so that a share of exactly 0.3 falls in the 30 bin
+# rounded before binning so that a share of exactly 0.3 falls in the 30-39 bin
 # rather than on a floating-point edge.
 bins <- species |>
   mutate(decile = pmin(floor(round(share_abnj, 9) * 10), 9)) |>
@@ -205,7 +205,8 @@ bins <- species |>
   summarise(species = n(), citations = sum(citations), .groups = "drop") |>
   right_join(tibble(decile = 0:9), by = "decile") |>
   mutate(across(c(species, citations), \(x) coalesce(x, 0L)),
-         bin   = factor(decile, levels = 0:9, labels = c(seq(0, 80, 10), "90+")),
+         bin   = factor(decile, levels = 0:9,
+                        labels = c(paste(seq(0, 80, 10), seq(9, 89, 10), sep = "\u2013"), "90\u2013100")),
          group = if_else(decile >= threshold * 10, "abnj", "other"))
 
 panel_a <- ggplot(bins, aes(bin, citations, fill = group)) +

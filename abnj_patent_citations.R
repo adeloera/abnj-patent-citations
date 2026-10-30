@@ -14,9 +14,8 @@
 #                               because a later retrieval would differ
 #   data/MABPAT_dataset.csv     MABPAT v3 flat table; fetched from figshare on
 #                               first run (file 46240417)
-#   data/eez.gpkg               Marine Regions EEZ layer, version 12; fetched
-#                               through the mregions2 package on first run
-#   Natural Earth 1:50m countries, through the rnaturalearth package
+#   data/high_seas.gpkg         Marine Regions High Seas polygon, version 1;
+#                               fetched through the mregions2 package on first run
 #
 # Outputs, in output/
 #   species_provenance.csv      one row per species: citations, records, ABNJ share
@@ -105,32 +104,37 @@ records <- read_csv(obis_file, col_types = cols(species = col_character(),
 
 # 3. Jurisdiction of each record --------------------------------------------------
 #
-# A record lies in ABNJ when it falls inside no exclusive economic zone and not
-# on land. Both tests run on the sphere; planar tests misplace points near the
-# antimeridian. The land test eliminates records for
-# mangroves, estuarine fish and crustaceans, and some freshwater species.
+# A record lies in ABNJ when it falls inside the Marine Regions High Seas
+# polygon: the ocean beyond every exclusive economic zone, territorial sea and
+# internal water, which is the area the Agreement covers. Testing against this
+# one layer avoids the gap between a coastline drawn for maritime zones and one
+# drawn for land, where points in narrow straits and estuaries fall in neither
+# and would pass as ABNJ. The test runs on the sphere; a planar test misplaces
+# points near the antimeridian and mishandles a polygon that wraps the poles.
 
-# As distributed, three EEZ polygons have edges that cross on the sphere, which
-# the spherical intersection test rejects, so the layer is repaired once when
-# it is fetched and stored repaired.
-eez_file <- "data/eez.gpkg"
-if (!file.exists(eez_file)) {
+# As distributed, the polygon has edges that cross on the sphere, which the
+# spherical test rejects, so it is rebuilt once when it is fetched and stored
+# rebuilt.
+high_seas_file <- "data/high_seas.gpkg"
+if (!file.exists(high_seas_file)) {
   if (!requireNamespace("mregions2", quietly = TRUE)) install.packages("mregions2", repos = "https://cloud.r-project.org")
-  mregions2::mrp_get("eez") |> st_make_valid() |> st_write(eez_file, quiet = TRUE)
+  high_seas <- mregions2::mrp_get("high_seas") |>
+    st_geometry() |>
+    st_as_binary() |>
+    s2::as_s2_geography(check = FALSE) |>
+    s2::s2_rebuild(s2::s2_options(split_crossing_edges = TRUE)) |>
+    st_as_sfc()
+  st_write(st_sf(geometry = high_seas), high_seas_file, quiet = TRUE)
 }
-eez  <- st_read(eez_file, quiet = TRUE)
-land <- rnaturalearth::ne_countries(scale = 50, returnclass = "sf") |>
-  st_union() |>
-  st_make_valid()
+high_seas <- st_read(high_seas_file, quiet = TRUE)
 
 points <- st_as_sf(records, coords = c("lon", "lat"), crs = 4326)
-records$in_eez  <- lengths(st_intersects(points, eez))  > 0
-records$in_land <- lengths(st_intersects(points, land)) > 0
+records$in_abnj <- lengths(st_intersects(points, high_seas)) > 0
 
 provenance <- records |>
   group_by(species) |>
   summarise(records    = n(),
-            share_abnj = mean(!in_eez & !in_land),
+            share_abnj = mean(in_abnj),
             .groups    = "drop")
 
 

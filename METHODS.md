@@ -1,5 +1,5 @@
 
-This document describes the data and method behind the statement in the text of "Don't tax discovery to fund the High Seas Treaty" that species recorded mostly in areas beyond national jurisdiction (ABNJ) account for 200 of 6,054 patent citations in 2003 to 2020, and behind Fig. 2. It also lists the sources for Fig. 1. The code and the data as used are deposited at [repository].
+This document describes the data and method behind the statement in the text of "Don't tax discovery to fund the High Seas Treaty" that species recorded mostly in areas beyond national jurisdiction (ABNJ) account for 115 of 6,062 patent citations in 2003 to 2020, and behind Fig. 2. It also lists the sources for Fig. 1. The code and the data as used are deposited at [repository].
 
 # Patent citations
 
@@ -9,33 +9,33 @@ A patent citation is one application citing at least one marine-flagged sequence
 
 # Occurrence records
 
-For each MABPAT marine species I retrieve georeferenced occurrence records from the Ocean Biodiversity Information System (OBIS) through its public API (version 3), querying the species name exactly as MABPAT gives it and requesting up to 300 records with coordinates. OBIS returns the first 300 records it holds in its own order, not a random sample. The records were retrieved in June 2026 and are archived with the code, since a later retrieval would return a different set as OBIS grows. OBIS holds records for 813 of the 1,639 marine species; the remainder, mostly microorganisms known from culture collections, drop out of the analysis. Combined with the citation window this leaves 774 species, which is the population in Fig. 2.
+For each MABPAT marine species I retrieve georeferenced occurrence records from the Ocean Biodiversity Information System (OBIS) through its public API (version 3), querying the species name exactly as MABPAT gives it and requesting up to 300 records with coordinates. OBIS returns the first 300 records it holds in its own order, not a random sample. The records were retrieved on October 30, 2026 and are archived with the code, since a later retrieval would return a different set as OBIS grows. OBIS holds records for 815 of the 1,639 marine species; the remainder, mostly microorganisms known from culture collections, drop out of the analysis. Combined with the citation window this leaves 776 species, which is the population in Fig. 2.
 
 # Jurisdiction of each record
 
-A record counts as lying in ABNJ when it falls inside no polygon of the Marine Regions Exclusive Economic Zones layer, version 12 (*2*), and not on land. The EEZ layer includes joint regimes and overlapping claims, all of which I treat as national jurisdiction. Land is the union of the Natural Earth 1:50m country polygons. Both point-in-polygon tests run on the sphere, using the s2 library through the sf package in R, because planar tests misplace points near the antimeridian.
+A record counts as lying in ABNJ when it falls inside the Marine Regions High Seas polygon, version 1 (*2*), which delineates the parts of the ocean outside every exclusive economic zone, territorial sea, internal water and archipelagic water, following the definition in the Law of the Sea Convention and therefore the area the Agreement covers. Joint regimes and overlapping claims lie outside the polygon and so count as national jurisdiction; the Southern Ocean lies inside it, consistent with the Agreement's scope. The point-in-polygon test runs on the sphere, using the s2 library through the sf package in R, because a planar test misplaces points near the antimeridian and does not handle a polygon that wraps the poles. As distributed, the polygon has edges that cross on the sphere, so it is rebuilt once with s2 before use; the rebuilt polygon covers 222,474,742 km2 against the 222,496,418 km2 that Marine Regions reports for the layer.
 
-The land test rules out records for mangroves, estuarine fish and crustaceans, and some freshwater species, whose coordinates often fall on land, outside every EEZ polygon, and would otherwise be counted as ABNJ. Marine Regions has no EEZ polygons south of 60 degrees south, so Southern Ocean records count as ABNJ, consistent with the Agreement's scope.
+Testing against the High Seas polygon directly, rather than against the complement of the EEZ layer, matters for coastal species. The EEZ polygons follow a detailed coastline, so a record in a narrow strait, estuary or mangrove fringe can fall outside every EEZ polygon and, at the same time, off any land layer coarse enough to be practical; tested that way it would pass as ABNJ. The High Seas polygon leaves no such gap.
 
-A species' ABNJ share is the fraction of its records that pass both tests. The main text calls a species "recorded mostly in ABNJ" when that share is at least one half. MABPAT itself carries a presence flag for ABNJ; 263 of the 774 species, holding 2,347 of the citations, are flagged present in ABNJ, because presence somewhere beyond national jurisdiction is common among widely distributed marine microorganisms. The share-based measure separates species whose records are concentrated beyond national jurisdiction from those that merely reach it.
+A species' ABNJ share is the fraction of its records inside the polygon. The main text calls a species "recorded mostly in ABNJ" when that share is at least one half. MABPAT itself carries a presence flag for ABNJ; 263 of the 776 species, holding 2,347 of the citations, are flagged present in ABNJ, because presence somewhere beyond national jurisdiction is common among widely distributed marine microorganisms. The share-based measure separates species whose records are concentrated beyond national jurisdiction from those that merely reach it.
 
 # Statistics by threshold
 
 The table gives the result at five thresholds. The text uses the row for one half. The share of citations beyond national jurisdiction rises as the threshold loosens but stays small, and at no threshold are those citations more recent than the rest.
 
-| Species with ABNJ share | Species | Citations (share of 6,054) | Median year, these species | Median year, others | After 2015, these species | After 2015, others |
+| Species with ABNJ share | Species | Citations (share of 6,062) | Median year, these species | Median year, others | After 2015, these species | After 2015, others |
 |---|---|---|---|---|---|---|
-| at least 90% | 10 | 13 (0.2%) | 2009 | 2011 | 0% | 23% |
-| at least 60% | 26 | 62 (1.0%) | 2011 | 2011 | 13% | 23% |
-| at least 50% | 48 | 200 (3.3%) | 2010 | 2011 | 14% | 23% |
-| at least 40% | 70 | 320 (5.3%) | 2010 | 2011 | 15% | 23% |
-| at least 20% | 194 | 1024 (16.9%) | 2011 | 2011 | 20% | 23% |
+| at least 90% | 7 | 10 (0.2%) | 2009 | 2011 | 0% | 23% |
+| at least 60% | 16 | 40 (0.7%) | 2010 | 2011 | 10% | 23% |
+| at least 50% | 28 | 115 (1.9%) | 2010 | 2011 | 9% | 23% |
+| at least 40% | 43 | 270 (4.5%) | 2010 | 2011 | 12% | 23% |
+| at least 20% | 87 | 607 (10.0%) | 2010 | 2011 | 15% | 24% |
 
-At the threshold of one half there are 48 species with 200 citations; the other 726 species have 5,854. The median citation year is 2010 against 2011, and 14% of the ABNJ citations fall after 2015 against 23% for the other species. The 10 species with at least 90% of their records in ABNJ are hydrothermal-vent fauna, Antarctic krill, and deep-sea microorganisms with one or two records each: *Moritella abyssi*, *Alvinella pompejana*, *Bizionia algoritergicola*, *Maribacter stanieri*, *Prosthecochloris vibrioformis*, *Alvinella caudata*, *Euphausia superba*, *Bythograea thermydron*, *Metridia asymmetrica*, *Ventiella sulfuris*.
+At the threshold of one half there are 28 species with 115 citations; the other 748 species have 5,947. The median citation year is 2010 against 2011, and 9% of the ABNJ citations fall after 2015 against 23% for the other species. The 7 species with at least 90% of their records in ABNJ are hydrothermal-vent fauna, a pelagic copepod, and two microorganisms with one or two records each: *Moritella abyssi*, *Prosthecochloris vibrioformis*, *Alvinella pompejana*, *Alvinella caudata*, *Bythograea thermydron*, *Metridia asymmetrica*, *Ventiella sulfuris*. Antarctic krill, *Euphausia superba*, has 88% of its records in ABNJ.
 
 # Limitations
 
-Three features of the data bear on the interpretation. First, OBIS sampling is much sparser in ABNJ than in coastal waters, so the ABNJ share of a species that occurs in both is biased downward; the classification is conservative in the direction of national jurisdiction, and the threshold table shows how far the conclusion depends on the cut. Second, the share measures where a species is recorded, not where the sample behind any particular patent was collected, which MABPAT does not record. Third, 13 of the 48 species recorded mostly in ABNJ have fewer than ten records, so their shares rest on few observations; the species in that group are listed, with their citation counts, in the deposited output.
+Three features of the data bear on the interpretation. First, OBIS sampling is much sparser in ABNJ than in coastal waters, so the ABNJ share of a species that occurs in both is biased downward; the classification is conservative in the direction of national jurisdiction, and the threshold table shows how far the conclusion depends on the cut. Second, the share measures where a species is recorded, not where the sample behind any particular patent was collected, which MABPAT does not record. Third, 4 of the 28 species recorded mostly in ABNJ have fewer than ten records, so their shares rest on few observations; the species in that group are listed, with their citation counts, in the deposited output.
 
 # Sources for Fig. 1
 
@@ -44,5 +44,5 @@ The five largest-selling marine-derived drugs and their most recent reported ann
 # References
 
 1. E. Zhivkoplias, J.-B. Jouffray, P. Dunshirn, A. Pranindita, R. Blasiak, Growing prominence of deep-sea life in marine bioprospecting. *Nat. Sustain.* **7**, 1027–1037 (2024). Data: MABPAT v3, figshare, doi:10.6084/m9.figshare.24893070.
-2. Flanders Marine Institute, Maritime Boundaries Geodatabase: Maritime Boundaries and Exclusive Economic Zones (200NM), version 12 (2023); https://www.marineregions.org/.
+2. Flanders Marine Institute, Maritime Boundaries Geodatabase: High Seas, version 1 (2020); https://www.marineregions.org/, doi:10.14284/418.
 3. P. Oldham, J. Kindness, E. Davidson, A. Westmoreland, T. Vanagt, M. Jaspars, Study on Marine Genetic Resources' Market Value and State of the Art of Commercialisation of Related Products in the Context of the BBNJ Negotiations: Final Report (Publications Office of the European Union, Luxembourg, 2025).

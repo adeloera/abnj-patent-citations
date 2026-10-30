@@ -213,6 +213,7 @@ panel_a <- ggplot(bins, aes(bin, citations, fill = group)) +
   geom_col(width = 0.75) +
   geom_text(aes(label = species), vjust = -0.4, size = 2.5, colour = "grey20") +
   scale_fill_manual(values = colours, guide = "none") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
   scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.18))) +
   labs(x     = "Share of occurrence records in ABNJ (%)",
        y     = "Patent citations (labels: species)",

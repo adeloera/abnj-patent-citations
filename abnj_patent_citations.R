@@ -7,7 +7,8 @@
 # computes the share of the species' records that fall in areas beyond
 # national jurisdiction (ABNJ). Patent citations are then tabulated by that
 # share. The outputs include the statistics quoted in the text and Fig. 2 of
-# "Don't tax discovery to fund the High Seas Treaty".
+# "Don't tax discovery: funding the BBNJ Agreement without a sales royalty on
+# marine genetic resources".
 #
 # Inputs
 #   data/obis_occurrences.csv   OBIS records as retrieved on October 30, 2026;

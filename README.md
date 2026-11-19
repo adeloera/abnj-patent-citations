@@ -1,6 +1,6 @@
 # Replication: patent citations of marine species by jurisdiction
 
-Code and data behind the statistics and Fig. 2 of "Don't tax discovery to fund the High Seas Treaty". METHODS.md describes the data and method.
+Code and data behind the statistics and Fig. 2 of "Don't tax discovery: funding the BBNJ Agreement without a sales royalty on marine genetic resources". METHODS.md describes the data and method.
 
 Run from this folder:
 
